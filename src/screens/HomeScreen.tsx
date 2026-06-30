@@ -1,7 +1,7 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { View, StyleSheet } from "react-native";
 
-import AppHeader from "@/components/menu/AppHeader";
+import AppHeader from "../components/menu/AppHeader";
 import DrawerMenu from "../components/menu/DrawerMenu";
 
 export default function HomeScreen() {
