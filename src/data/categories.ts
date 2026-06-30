@@ -1,156 +1,125 @@
-export type SubCategory = {
-  id: string;
-  name: string;
-};
+// data/categories.ts
+import { Ionicons } from "@expo/vector-icons";
 
-export type Category = {
+type IconName = React.ComponentProps<typeof Ionicons>['name'];
+
+export interface Category {
   id: string;
   name: string;
-  icon: string;
+  icon: IconName; // Made required instead of optional
   subCategories: SubCategory[];
-};
+}
 
-export const categories: Category[] = [
+export interface SubCategory {
+  id: string;
+  name: string;
+}
+
+// Use 'as const' to make the array readonly and more type-safe
+export const categories = [
   {
-    id: "chargers",
-    name: "Chargers",
-    icon: "flash-outline",
+    id: '1',
+    name: 'Fast Chargers',
+    icon: 'flash-outline' as IconName,
     subCategories: [
-      { id: "fast-chargers", name: "Fast Chargers" },
-      { id: "wireless-chargers", name: "Wireless Chargers" },
-      { id: "car-chargers", name: "Car Chargers" },
-      { id: "wall-chargers", name: "Wall Chargers" },
-      { id: "travel-chargers", name: "Travel Chargers" },
+      { id: '1-1', name: 'Wireless Chargers' },
+      { id: '1-2', name: 'Car Chargers' },
+      { id: '1-3', name: 'Wall Chargers' },
     ],
   },
-
   {
-    id: "power-banks",
-    name: "Power Banks",
-    icon: "battery-charging-outline",
+    id: '2',
+    name: 'Power Banks',
+    icon: 'battery-full-outline' as IconName,
     subCategories: [
-      { id: "5000mah", name: "5000mAh" },
-      { id: "10000mah", name: "10000mAh" },
-      { id: "20000mah", name: "20000mAh" },
-      { id: "magsafe", name: "MagSafe Power Banks" },
-      { id: "solar", name: "Solar Power Banks" },
+      { id: '2-1', name: 'Portable Power Banks' },
+      { id: '2-2', name: 'Solar Power Banks' },
     ],
   },
-
   {
-    id: "cables",
-    name: "Cables",
-    icon: "git-branch-outline",
+    id: '3',
+    name: 'Cables',
+    icon: 'usb-outline' as IconName, // Changed from 'cable-outline'
     subCategories: [
-      { id: "usb-c", name: "USB-C" },
-      { id: "lightning", name: "Lightning" },
-      { id: "micro-usb", name: "Micro USB" },
-      { id: "hdmi", name: "HDMI" },
-      { id: "otg", name: "OTG Cables" },
+      { id: '3-1', name: 'USB-C Cables' },
+      { id: '3-2', name: 'Lightning Cables' },
+      { id: '3-3', name: 'Micro USB Cables' },
     ],
   },
-
   {
-    id: "audio",
-    name: "Audio",
-    icon: "headset-outline",
+    id: '4',
+    name: 'Audio',
+    icon: 'headset-outline' as IconName,
     subCategories: [
-      { id: "earbuds", name: "Earbuds" },
-      { id: "headphones", name: "Headphones" },
-      { id: "bluetooth-speakers", name: "Bluetooth Speakers" },
-      { id: "neckbands", name: "Neckbands" },
-      { id: "wired-earphones", name: "Wired Earphones" },
+      { id: '4-1', name: 'Earphones' },
+      { id: '4-2', name: 'Headphones' },
+      { id: '4-3', name: 'Speakers' },
     ],
   },
-
   {
-    id: "protection",
-    name: "Protection",
-    icon: "shield-checkmark-outline",
+    id: '5',
+    name: 'Protection',
+    icon: 'shield-outline' as IconName,
     subCategories: [
-      { id: "phone-cases", name: "Phone Cases" },
-      { id: "screen-protectors", name: "Screen Protectors" },
-      { id: "camera-lens-protectors", name: "Camera Lens Protectors" },
-      { id: "tablet-covers", name: "Tablet Covers" },
-      { id: "laptop-sleeves", name: "Laptop Sleeves" },
+      { id: '5-1', name: 'Screen Protectors' },
+      { id: '5-2', name: 'Phone Cases' },
     ],
   },
-
   {
-    id: "smart-accessories",
-    name: "Smart Accessories",
-    icon: "watch-outline",
+    id: '6',
+    name: 'Smart Accessories',
+    icon: 'watch-outline' as IconName,
     subCategories: [
-      { id: "smart-watches", name: "Smart Watches" },
-      { id: "fitness-bands", name: "Fitness Bands" },
-      { id: "smart-rings", name: "Smart Rings" },
-      { id: "smart-tags", name: "Smart Tags" },
-      { id: "wearables", name: "Wearables" },
+      { id: '6-1', name: 'Smart Watches' },
+      { id: '6-2', name: 'Smart Bands' },
     ],
   },
-
   {
-    id: "camera-selfie",
-    name: "Camera & Selfie",
-    icon: "camera-outline",
+    id: '7',
+    name: 'Camera & Selfie',
+    icon: 'camera-outline' as IconName,
     subCategories: [
-      { id: "tripods", name: "Tripods" },
-      { id: "selfie-sticks", name: "Selfie Sticks" },
-      { id: "ring-lights", name: "Ring Lights" },
-      { id: "phone-camera-lenses", name: "Phone Camera Lenses" },
-      { id: "camera-accessories", name: "Camera Accessories" },
+      { id: '7-1', name: 'Selfie Sticks' },
+      { id: '7-2', name: 'Tripods' },
     ],
   },
-
   {
-    id: "mount-holders",
-    name: "Mount & Holders",
-    icon: "car-outline",
+    id: '8',
+    name: 'Mounts & Holders',
+    icon: 'phone-portrait-outline' as IconName,
     subCategories: [
-      { id: "car-mounts", name: "Car Mounts" },
-      { id: "bike-holders", name: "Bike Holders" },
-      { id: "desk-stands", name: "Desk Stands" },
-      { id: "magnetic-holders", name: "Magnetic Holders" },
-      { id: "tablet-holders", name: "Tablet Holders" },
+      { id: '8-1', name: 'Car Mounts' },
+      { id: '8-2', name: 'Desk Holders' },
     ],
   },
-
   {
-    id: "memory-storage",
-    name: "Memory & Storage",
-    icon: "save-outline",
+    id: '9',
+    name: 'Memory & Storage',
+    icon: 'save-outline' as IconName,
     subCategories: [
-      { id: "memory-cards", name: "Memory Cards" },
-      { id: "usb-flash-drives", name: "USB Flash Drives" },
-      { id: "external-ssd", name: "External SSD" },
-      { id: "external-hdd", name: "External HDD" },
-      { id: "card-readers", name: "Card Readers" },
+      { id: '9-1', name: 'Memory Cards' },
+      { id: '9-2', name: 'USB Drives' },
     ],
   },
-
   {
-    id: "computer-accessories",
-    name: "Computer Accessories",
-    icon: "laptop-outline",
+    id: '10',
+    name: 'Computer Access...',
+    icon: 'laptop-outline' as IconName,
     subCategories: [
-      { id: "keyboards", name: "Keyboards" },
-      { id: "mouse", name: "Mouse" },
-      { id: "cooling-pads", name: "Cooling Pads" },
-      { id: "usb-hubs", name: "USB Hubs" },
-      { id: "laptop-bags", name: "Laptop Bags" },
+      { id: '10-1', name: 'Mice' },
+      { id: '10-2', name: 'Keyboards' },
     ],
   },
-
   {
-    id: "batteries",
-    name: "Batteries",
-    icon: "battery-half-outline",
+    id: '11',
+    name: 'Batteries',
+    icon: 'battery-charging-outline' as IconName,
     subCategories: [
-      { id: "aa-batteries", name: "AA Batteries" },
-      { id: "aaa-batteries", name: "AAA Batteries" },
-      { id: "rechargeable-batteries", name: "Rechargeable Batteries" },
-      { id: "button-cell-batteries", name: "Button Cell Batteries" },
-      { id: "camera-batteries", name: "Camera Batteries" },
+      { id: '11-1', name: 'Rechargeable Batteries' },
+      { id: '11-2', name: 'Battery Chargers' },
     ],
   },
-];
+] as const;
+
+// Type for the categories array
+export type CategoryType = typeof categories[number];

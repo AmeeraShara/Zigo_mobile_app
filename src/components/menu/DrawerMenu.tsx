@@ -1,3 +1,4 @@
+// components/menu/DrawerMenu.tsx
 import React, { useState, useEffect, useRef } from "react";
 import {
   View,
@@ -7,9 +8,11 @@ import {
   Animated,
   Dimensions,
   Pressable,
+  ScrollView,
+  SafeAreaView,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { categories } from "../../data/categories";
+import { Colors } from "../../constants/colors";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
@@ -18,13 +21,90 @@ type Props = {
   onClose: () => void;
 };
 
+// Sample data based on your image
+const menuData = [
+  {
+    id: '1',
+    name: 'Shop',
+    icon: 'storefront-outline',
+    isHeader: true,
+  },
+  {
+    id: '2',
+    name: 'Chargers',
+    icon: 'flash-outline',
+    subCategories: [
+      'Fast Chargers',
+      'Wireless Chargers',
+      'Car Chargers',
+    ],
+  },
+  {
+    id: '3',
+    name: 'Power Banks',
+    icon: 'battery-full-outline',
+    subCategories: [],
+  },
+  {
+    id: '4',
+    name: 'Cables',
+    icon: 'usb-outline',
+    subCategories: [],
+  },
+  {
+    id: '5',
+    name: 'Audio',
+    icon: 'headset-outline',
+    subCategories: [],
+  },
+  {
+    id: '6',
+    name: 'Protection',
+    icon: 'shield-outline',
+    subCategories: [],
+  },
+  {
+    id: '7',
+    name: 'Smart Accessories',
+    icon: 'watch-outline',
+    subCategories: [],
+  },
+  {
+    id: '8',
+    name: 'Camera & Selfie',
+    icon: 'camera-outline',
+    subCategories: [],
+  },
+  {
+    id: '9',
+    name: 'Mounts & Holders',
+    icon: 'phone-portrait-outline',
+    subCategories: [],
+  },
+  {
+    id: '10',
+    name: 'Memory & Storage',
+    icon: 'save-outline',
+    subCategories: [],
+  },
+  {
+    id: '11',
+    name: 'Computer Access...',
+    icon: 'laptop-outline',
+    subCategories: [],
+  },
+  {
+    id: '12',
+    name: 'Batteries',
+    icon: 'battery-charging-outline',
+    subCategories: [],
+  },
+];
+
 export default function DrawerMenu({ visible, onClose }: Props) {
   const [expanded, setExpanded] = useState<string | null>(null);
-
-  // FIX: stable animation reference
   const translateX = useRef(new Animated.Value(-SCREEN_WIDTH)).current;
 
-  // FIX: safer effect dependency
   useEffect(() => {
     if (visible) {
       Animated.timing(translateX, {
@@ -41,87 +121,102 @@ export default function DrawerMenu({ visible, onClose }: Props) {
     }
   }, [visible, translateX]);
 
+  const toggleExpand = (id: string) => {
+    setExpanded(expanded === id ? null : id);
+  };
+
   return (
     <>
-      {/* Overlay */}
       {visible && (
-        <Pressable style={styles.overlay} onPress={onClose} />
+        <Pressable 
+          style={[styles.overlay, { backgroundColor: Colors.drawer.overlay }]} 
+          onPress={onClose} 
+        />
       )}
 
-      {/* Drawer */}
       <Animated.View
         style={[
           styles.drawer,
-          { transform: [{ translateX }] },
+          { 
+            transform: [{ translateX }],
+            backgroundColor: Colors.drawer.background,
+          },
         ]}
       >
-        {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.title}>Categories</Text>
-
-          <TouchableOpacity onPress={onClose}>
-            <Ionicons name="close" size={28} color="#111827" />
-          </TouchableOpacity>
-        </View>
-
-        {/* Safety check */}
-        {Array.isArray(categories) && (
-          <View style={styles.list}>
-            {categories.map((cat) => {
-              const isOpen = expanded === cat.id;
+        <SafeAreaView style={styles.safeArea}>
+          <ScrollView 
+            style={styles.scrollView}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.scrollContent}
+          >
+            {menuData.map((item) => {
+              const isExpanded = expanded === item.id;
+              const hasSubCategories = item.subCategories && item.subCategories.length > 0;
 
               return (
-                <View key={cat.id}>
-                  {/* Main Category */}
+                <View key={item.id} style={styles.itemWrapper}>
                   <TouchableOpacity
-                    style={styles.item}
-                    onPress={() =>
-                      setExpanded(isOpen ? null : cat.id)
-                    }
-                  >
-                    <Ionicons
-                      name="grid-outline"
-                      size={22}
-                      color="#64748B"
-                    />
-
-                    <Text style={styles.itemText}>
-                      {cat.name}
-                    </Text>
-
-                    <Ionicons
-                      name={
-                        isOpen
-                          ? "chevron-up-outline"
-                          : "chevron-down-outline"
+                    style={[
+                      styles.mainItem,
+                      isExpanded && styles.mainItemExpanded,
+                    ]}
+                    onPress={() => {
+                      if (hasSubCategories) {
+                        toggleExpand(item.id);
+                      } else {
+                        console.log('Selected:', item.name);
+                        onClose();
                       }
-                      size={20}
-                      color="#64748B"
-                      style={{ marginLeft: "auto" }}
-                    />
+                    }}
+                    activeOpacity={0.7}
+                  >
+                    <View style={styles.itemContent}>
+                      <Ionicons
+                        name={item.icon as any}
+                        size={22}
+                        color={isExpanded ? Colors.brand.accent : Colors.drawer.iconColor}
+                        style={styles.itemIcon}
+                      />
+                      <Text style={[
+                        styles.itemText,
+                        isExpanded && styles.itemTextExpanded,
+                      ]}>
+                        {item.name}
+                      </Text>
+                      {hasSubCategories && (
+                        <Ionicons
+                          name={isExpanded ? "chevron-up" : "chevron-down"}
+                          size={20}
+                          color={Colors.drawer.iconColor}
+                          style={styles.chevron}
+                        />
+                      )}
+                    </View>
                   </TouchableOpacity>
 
                   {/* Sub Categories */}
-                  {isOpen &&
-                    cat.subCategories?.map((sub) => (
-                      <TouchableOpacity
-                        key={sub.id}
-                        style={styles.subItem}
-                        onPress={() => {
-                          console.log("Selected:", sub.id);
-                          onClose();
-                        }}
-                      >
-                        <Text style={styles.subText}>
-                          • {sub.name}
-                        </Text>
-                      </TouchableOpacity>
-                    ))}
+                  {isExpanded && hasSubCategories && (
+                    <View style={styles.subCategoryContainer}>
+                      {item.subCategories.map((sub, index) => (
+                        <TouchableOpacity
+                          key={index}
+                          style={styles.subItem}
+                          onPress={() => {
+                            console.log('Selected sub:', sub);
+                            onClose();
+                          }}
+                          activeOpacity={0.7}
+                        >
+                          <Text style={styles.subItemText}>{sub}</Text>
+                        </TouchableOpacity>
+                      ))}
+                    </View>
+                  )}
                 </View>
               );
             })}
-          </View>
-        )}
+          </ScrollView>
+        </SafeAreaView>
       </Animated.View>
     </>
   );
@@ -129,8 +224,11 @@ export default function DrawerMenu({ visible, onClose }: Props) {
 
 const styles = StyleSheet.create({
   overlay: {
-    // ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0,0,0,0.4)",
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     zIndex: 10,
   },
 
@@ -140,47 +238,79 @@ const styles = StyleSheet.create({
     top: 0,
     bottom: 0,
     width: "80%",
-    backgroundColor: "#fff",
     zIndex: 20,
-    paddingTop: 60,
-    paddingHorizontal: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 2, height: 0 },
+    shadowOpacity: 0.15,
+    shadowRadius: 10,
+    elevation: 5,
   },
 
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 20,
+  safeArea: {
+    flex: 1,
+    paddingTop: 50,
   },
 
-  title: {
-    fontSize: 22,
-    fontWeight: "700",
+  scrollView: {
+    flex: 1,
   },
 
-  list: {
-    marginTop: 10,
+  scrollContent: {
+    paddingHorizontal: 24,
+    paddingBottom: 30,
   },
 
-  item: {
-    flexDirection: "row",
-    alignItems: "center",
+  itemWrapper: {
+    marginBottom: 2,
+  },
+
+  mainItem: {
     paddingVertical: 14,
-    gap: 10,
+    borderRadius: 8,
+  },
+
+  mainItemExpanded: {
+    backgroundColor: '#F8F8FC',
+  },
+
+  itemContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+
+  itemIcon: {
+    marginRight: 14,
   },
 
   itemText: {
     fontSize: 16,
-    marginLeft: 10,
-    color: "#111827",
+    color: Colors.drawer.categoryText,
+    fontWeight: '500',
+    flex: 1,
+  },
+
+  itemTextExpanded: {
+    color: Colors.brand.accent,
+    fontWeight: '600',
+  },
+
+  chevron: {
+    marginLeft: 'auto',
+  },
+
+  subCategoryContainer: {
+    paddingLeft: 36,
+    paddingBottom: 8,
   },
 
   subItem: {
-    paddingLeft: 45,
-    paddingVertical: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 4,
   },
 
-  subText: {
-    color: "#64748B",
-    fontSize: 14,
+  subItemText: {
+    fontSize: 15,
+    color: Colors.drawer.subCategoryText,
+    fontWeight: '400',
   },
 });
