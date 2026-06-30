@@ -157,8 +157,10 @@ const menuData = [
 ];
 
 export default function DrawerMenu({ visible, onClose }: Props) {
-  // Initialize with "1" (Shop) as expanded
-  const [expanded, setExpanded] = useState<string | null>("1");
+  // Navigation state
+  const [showCategories, setShowCategories] = useState(false);
+  const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
+  
   const translateX = useRef(new Animated.Value(-SCREEN_WIDTH)).current;
 
   useEffect(() => {
@@ -168,30 +170,151 @@ export default function DrawerMenu({ visible, onClose }: Props) {
       useNativeDriver: true,
     }).start();
 
-    // Always expand Shop when drawer opens
+    // Reset to shop level when drawer opens
     if (visible) {
-      setExpanded("1");
+      setShowCategories(false);
+      setExpandedCategory(null);
     }
   }, [visible]);
 
-  const toggleExpand = (id: string) => {
-    // If clicking on "Shop", keep it expanded (but it has no subcategories)
-    if (id === "1") {
-      setExpanded("1");
-      return;
-    }
-    // For other categories, toggle normally
-    setExpanded(expanded === id ? null : id);
+  // Handle Shop click - show categories
+  const handleShopPress = () => {
+    setShowCategories(true);
+    setExpandedCategory(null);
   };
+
+  // Handle back to Shop
+  const handleBackToShop = () => {
+    setShowCategories(false);
+    setExpandedCategory(null);
+  };
+
+  // Toggle category expansion
+  const toggleCategory = (id: string) => {
+    setExpandedCategory(expandedCategory === id ? null : id);
+  };
+
+  // Handle subcategory click
+  const handleSubCategoryPress = (categoryName: string, sub: string) => {
+    console.log(`Category: ${categoryName}, Subcategory: ${sub}`);
+    onClose();
+  };
+
+  // Render Shop level (only "Shop" item)
+  const renderShopLevel = () => (
+    <TouchableOpacity
+      style={styles.shopItem}
+      onPress={handleShopPress}
+      activeOpacity={0.7}
+    >
+      <View style={styles.itemContent}>
+        <Ionicons
+          name="storefront-outline"
+          size={24}
+          color={Colors.drawer.iconColor}
+          style={styles.itemIcon}
+        />
+        <Text style={styles.shopText}>Shop</Text>
+        <Ionicons
+          name="chevron-forward-outline"
+          size={20}
+          color={Colors.drawer.iconColor}
+          style={styles.chevronIcon}
+        />
+      </View>
+    </TouchableOpacity>
+  );
+
+  // Render Categories level with expandable subcategories
+  const renderCategoriesLevel = () => (
+    <>
+      {/* Back button */}
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={handleBackToShop}
+        activeOpacity={0.7}
+      >
+        <Ionicons
+          name="arrow-back-outline"
+          size={24}
+          color={Colors.drawer.categoryText}
+        />
+        <Text style={styles.backButtonText}>Shop</Text>
+      </TouchableOpacity>
+
+      <View style={styles.divider} />
+
+      {/* All categories (excluding "Shop" itself) */}
+      {menuData.slice(1).map((item) => {
+        const isExpanded = expandedCategory === item.id;
+        const hasSubCategories = item.subCategories.length > 0;
+
+        return (
+          <View key={item.id} style={styles.categoryWrapper}>
+            {/* Category Item */}
+            <TouchableOpacity
+              style={[
+                styles.categoryItem,
+                isExpanded && hasSubCategories && styles.categoryItemExpanded,
+              ]}
+              onPress={() => toggleCategory(item.id)}
+              activeOpacity={0.7}
+            >
+              <View style={styles.itemContent}>
+                <Ionicons
+                  name={item.icon as any}
+                  size={22}
+                  color={
+                    isExpanded && hasSubCategories
+                      ? Colors.brand.accent
+                      : Colors.drawer.iconColor
+                  }
+                  style={styles.itemIcon}
+                />
+                <Text
+                  style={[
+                    styles.categoryText,
+                    isExpanded && hasSubCategories && styles.categoryTextExpanded,
+                  ]}
+                >
+                  {item.name}
+                </Text>
+                {hasSubCategories && (
+                  <Ionicons
+                    name={isExpanded ? "chevron-up" : "chevron-down"}
+                    size={20}
+                    color={Colors.drawer.iconColor}
+                  />
+                )}
+              </View>
+            </TouchableOpacity>
+
+            {/* Subcategories - shown below the category */}
+            {isExpanded && hasSubCategories && (
+              <View style={styles.subCategoryContainer}>
+                {item.subCategories.map((sub, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    style={styles.subItem}
+                    onPress={() => handleSubCategoryPress(item.name, sub)}
+                    activeOpacity={0.7}
+                  >
+                    <Text style={styles.subItemText}>• {sub}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            )}
+          </View>
+        );
+      })}
+    </>
+  );
 
   return (
     <>
       {visible && (
         <Pressable
-          style={[
-            styles.overlay,
-            { backgroundColor: Colors.drawer.overlay },
-          ]}
+          style={[styles.overlay, { backgroundColor: Colors.drawer.overlay }]}
           onPress={onClose}
         />
       )}
@@ -211,89 +334,7 @@ export default function DrawerMenu({ visible, onClose }: Props) {
             contentContainerStyle={styles.scrollContent}
             showsVerticalScrollIndicator={false}
           >
-            {menuData.map((item) => {
-              const isExpanded = expanded === item.id;
-              const hasSubCategories = item.subCategories.length > 0;
-
-              return (
-                <View key={item.id} style={styles.itemWrapper}>
-                  {/* Main Category */}
-                  <TouchableOpacity
-                    style={[
-                      styles.mainItem,
-                      isExpanded && hasSubCategories && styles.mainItemExpanded,
-                    ]}
-                    activeOpacity={0.7}
-                    onPress={() => {
-                      if (item.id === "1") {
-                        // Shop: just close the drawer
-                        onClose();
-                      } else {
-                        toggleExpand(item.id);
-                      }
-                    }}
-                  >
-                    <View style={styles.itemContent}>
-                      <Ionicons
-                        name={item.icon as any}
-                        size={22}
-                        color={
-                          isExpanded && hasSubCategories
-                            ? Colors.brand.accent
-                            : Colors.drawer.iconColor
-                        }
-                        style={styles.itemIcon}
-                      />
-
-                      <Text
-                        style={[
-                          styles.itemText,
-                          isExpanded && hasSubCategories && styles.itemTextExpanded,
-                        ]}
-                      >
-                        {item.name}
-                      </Text>
-
-                      {/* Only show chevron if there are subcategories */}
-                      {hasSubCategories && (
-                        <Ionicons
-                          name={
-                            isExpanded
-                              ? "chevron-up"
-                              : "chevron-down"
-                          }
-                          size={20}
-                          color={Colors.drawer.iconColor}
-                        />
-                      )}
-                    </View>
-                  </TouchableOpacity>
-
-                  {/* Sub Categories - only render if there are subcategories */}
-                  {isExpanded && hasSubCategories && (
-                    <View style={styles.subCategoryContainer}>
-                      {item.subCategories.map((sub, index) => (
-                        <TouchableOpacity
-                          key={index}
-                          style={styles.subItem}
-                          activeOpacity={0.7}
-                          onPress={() => {
-                            console.log(
-                              `Category: ${item.name}, Subcategory: ${sub}`
-                            );
-                            onClose();
-                          }}
-                        >
-                          <Text style={styles.subItemText}>
-                            • {sub}
-                          </Text>
-                        </TouchableOpacity>
-                      ))}
-                    </View>
-                  )}
-                </View>
-              );
-            })}
+            {showCategories ? renderCategoriesLevel() : renderShopLevel()}
           </ScrollView>
         </SafeAreaView>
       </Animated.View>
@@ -342,19 +383,20 @@ const styles = StyleSheet.create({
     paddingBottom: 30,
   },
 
-  itemWrapper: {
-    marginBottom: 2,
-  },
-
-  mainItem: {
-    paddingVertical: 14,
+  // Shop level styles
+  shopItem: {
+    paddingVertical: 16,
     borderRadius: 8,
   },
 
-  mainItemExpanded: {
-    backgroundColor: "#F8F8FC",
+  shopText: {
+    flex: 1,
+    fontSize: 20,
+    fontWeight: "600",
+    color: Colors.drawer.categoryText,
   },
 
+  // Common styles
   itemContent: {
     flexDirection: "row",
     alignItems: "center",
@@ -364,18 +406,57 @@ const styles = StyleSheet.create({
     marginRight: 14,
   },
 
-  itemText: {
+  chevronIcon: {
+    marginLeft: 8,
+  },
+
+  // Categories level styles
+  backButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 12,
+    marginBottom: 8,
+  },
+
+  backButtonText: {
+    fontSize: 20,
+    fontWeight: "600",
+    color: Colors.drawer.categoryText,
+    marginLeft: 12,
+  },
+
+  divider: {
+    height: 1,
+    backgroundColor: "#E5E5E5",
+    marginBottom: 12,
+  },
+
+  categoryWrapper: {
+    marginBottom: 2,
+  },
+
+  categoryItem: {
+    paddingVertical: 14,
+    borderRadius: 8,
+  },
+
+  categoryItemExpanded: {
+    backgroundColor: "#F8F8FC",
+  },
+
+  categoryText: {
     flex: 1,
     fontSize: 16,
     fontWeight: "500",
     color: Colors.drawer.categoryText,
   },
 
-  itemTextExpanded: {
+  categoryTextExpanded: {
     color: Colors.brand.accent,
     fontWeight: "600",
   },
 
+  // Subcategories styles
   subCategoryContainer: {
     marginLeft: 18,
     marginBottom: 8,
