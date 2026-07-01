@@ -255,6 +255,12 @@ export default function DrawerMenu({ visible, onClose }: Props) {
               activeOpacity={0.7}
             >
               <View style={styles.itemContent}>
+                <Ionicons
+                  name={item.icon as any}
+                  size={22}
+                  color={isSelected ? "#FFFFFF" : "#8A8AA8"}
+                  style={styles.itemIcon}
+                />
                 <Text
                   style={[
                     styles.categoryText,
@@ -320,8 +326,6 @@ export default function DrawerMenu({ visible, onClose }: Props) {
             contentContainerStyle={styles.scrollContent}
             showsVerticalScrollIndicator={false}
           >
-
-
             {/* Shop Item */}
             {renderShopLevel()}
 
@@ -375,11 +379,9 @@ const styles = StyleSheet.create({
     paddingBottom: 30,
   },
 
-  // Header styles
   headerContainer: {
     marginBottom: 8,
   },
-
 
   divider: {
     height: 1,
