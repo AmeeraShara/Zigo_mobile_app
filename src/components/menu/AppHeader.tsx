@@ -1,3 +1,5 @@
+// src/components/menu/AppHeader.tsx
+
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
@@ -34,13 +36,15 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-
     elevation: 3,
     shadowColor: "#000",
     shadowOpacity: 0.08,
     shadowRadius: 4,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
   },
-
   logo: {
     width: 42,
     height: 42,
@@ -49,13 +53,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-
   logoText: {
     color: "#fff",
     fontSize: 20,
     fontWeight: "bold",
   },
-
   title: {
     flex: 1,
     marginLeft: 15,

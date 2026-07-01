@@ -1,3 +1,5 @@
+// src/components/menu/DrawerMenu.tsx
+
 import React, { useState, useEffect, useRef } from "react";
 import {
   View,
@@ -11,154 +13,20 @@ import {
   SafeAreaView,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { Colors } from "../../constants/colors";
+import { router } from "expo-router";
+import { categories } from "../../data/categories";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
-type Props = {
+export interface DrawerMenuProps {
   visible: boolean;
   onClose: () => void;
-};
+}
 
-// Every category has subcategories
-const menuData = [
-  {
-    id: "1",
-    name: "Shop",
-    icon: "storefront-outline",
-    subCategories: [],
-  },
-  {
-    id: "2",
-    name: "Chargers",
-    icon: "flash-outline",
-    subCategories: [
-      "Fast Chargers",
-      "Wireless Chargers",
-      "Car Chargers",
-      "Wall Chargers",
-      "Charging Stations",
-    ],
-  },
-  {
-    id: "3",
-    name: "Power Banks",
-    icon: "battery-full-outline",
-    subCategories: [
-      "5000mAh",
-      "10000mAh",
-      "20000mAh",
-      "MagSafe Power Banks",
-    ],
-  },
-  {
-    id: "4",
-    name: "Cables",
-    icon: "usb-outline",
-    subCategories: [
-      "USB-C",
-      "Lightning",
-      "Micro USB",
-      "HDMI",
-      "Type-C to Type-C",
-    ],
-  },
-  {
-    id: "5",
-    name: "Audio",
-    icon: "headset-outline",
-    subCategories: [
-      "Earbuds",
-      "Headphones",
-      "Bluetooth Speakers",
-      "Neckbands",
-    ],
-  },
-  {
-    id: "6",
-    name: "Protection",
-    icon: "shield-outline",
-    subCategories: [
-      "Screen Protectors",
-      "Phone Cases",
-      "Camera Protectors",
-      "Laptop Sleeves",
-    ],
-  },
-  {
-    id: "7",
-    name: "Smart Accessories",
-    icon: "watch-outline",
-    subCategories: [
-      "Smart Watches",
-      "Fitness Bands",
-      "Smart Tags",
-      "Wearables",
-    ],
-  },
-  {
-    id: "8",
-    name: "Camera & Selfie",
-    icon: "camera-outline",
-    subCategories: [
-      "Selfie Sticks",
-      "Tripods",
-      "Ring Lights",
-      "Phone Lenses",
-    ],
-  },
-  {
-    id: "9",
-    name: "Mounts & Holders",
-    icon: "phone-portrait-outline",
-    subCategories: [
-      "Car Mounts",
-      "Bike Mounts",
-      "Desk Holders",
-      "Magnetic Holders",
-    ],
-  },
-  {
-    id: "10",
-    name: "Memory & Storage",
-    icon: "save-outline",
-    subCategories: [
-      "Micro SD Cards",
-      "USB Flash Drives",
-      "External SSDs",
-      "Memory Card Readers",
-    ],
-  },
-  {
-    id: "11",
-    name: "Computer Accessories",
-    icon: "laptop-outline",
-    subCategories: [
-      "Keyboards",
-      "Mouse",
-      "Webcams",
-      "USB Hubs",
-      "Laptop Stands",
-    ],
-  },
-  {
-    id: "12",
-    name: "Batteries",
-    icon: "battery-charging-outline",
-    subCategories: [
-      "AA Batteries",
-      "AAA Batteries",
-      "Rechargeable Batteries",
-      "Button Cells",
-    ],
-  },
-];
-
-export default function DrawerMenu({ visible, onClose }: Props) {
+export default function DrawerMenu({ visible, onClose }: DrawerMenuProps) {
   const [showCategories, setShowCategories] = useState(false);
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [isShopSelected, setIsShopSelected] = useState(false);
   
   const translateX = useRef(new Animated.Value(-SCREEN_WIDTH)).current;
 
@@ -170,26 +38,20 @@ export default function DrawerMenu({ visible, onClose }: Props) {
     }).start();
 
     if (visible) {
-      // Reset when drawer opens
       setShowCategories(false);
       setExpandedCategory(null);
       setSelectedCategory(null);
-      setIsShopSelected(false);
     }
   }, [visible]);
 
   const handleShopPress = () => {
     setShowCategories(!showCategories);
-    setIsShopSelected(true); 
-    setSelectedCategory("shop");
     if (!showCategories) {
       setExpandedCategory(null);
     }
   };
 
   const toggleCategory = (id: string) => {
-    // Keep shop selected
-    setIsShopSelected(true);
     if (selectedCategory === id) {
       setExpandedCategory(expandedCategory === id ? null : id);
     } else {
@@ -198,17 +60,23 @@ export default function DrawerMenu({ visible, onClose }: Props) {
     }
   };
 
-  const handleSubCategoryPress = (categoryName: string, sub: string) => {
-    console.log(`Category: ${categoryName}, Subcategory: ${sub}`);
+  const handleSubCategoryPress = (categoryName: string, subCategoryName: string) => {
     onClose();
+    // Use router.push with Expo Router
+    router.push({
+      pathname: '/category-products',
+      params: { 
+        categoryName, 
+        subCategoryName 
+      }
+    });
   };
 
-  // Render Shop level (only "Shop" item)
   const renderShopLevel = () => (
     <TouchableOpacity
       style={[
         styles.shopItem,
-        isShopSelected && styles.shopItemSelected 
+        showCategories && styles.shopItemSelected 
       ]}
       onPress={handleShopPress}
       activeOpacity={0.7}
@@ -224,39 +92,35 @@ export default function DrawerMenu({ visible, onClose }: Props) {
         <Ionicons
           name={showCategories ? "chevron-up" : "chevron-down"}
           size={20}
-          color={isShopSelected ? "#FFFFFF" : "#8A8AA8"}
+          color={showCategories ? "#FFFFFF" : "#8A8AA8"}
           style={styles.chevronIcon}
         />
       </View>
     </TouchableOpacity>
   );
 
-  // Render Categories
   const renderCategories = () => (
     <>
       <View style={styles.divider} />
 
-      {/* All categories (excluding "Shop" itself) */}
-      {menuData.slice(1).map((item) => {
+      {categories.map((item) => {
         const isExpanded = expandedCategory === item.id;
         const isSelected = selectedCategory === item.id;
         const hasSubCategories = item.subCategories.length > 0;
 
         return (
           <View key={item.id} style={styles.categoryWrapper}>
-            {/* Category Item */}
             <TouchableOpacity
               style={[
                 styles.categoryItem,
                 isSelected && styles.categoryItemSelected,
-                !isSelected && isExpanded && hasSubCategories && styles.categoryItemExpanded,
               ]}
               onPress={() => toggleCategory(item.id)}
               activeOpacity={0.7}
             >
               <View style={styles.itemContent}>
                 <Ionicons
-                  name={item.icon as any}
+                  name={item.icon}
                   size={22}
                   color={isSelected ? "#FFFFFF" : "#8A8AA8"}
                   style={styles.itemIcon}
@@ -265,7 +129,6 @@ export default function DrawerMenu({ visible, onClose }: Props) {
                   style={[
                     styles.categoryText,
                     isSelected && styles.categoryTextSelected,
-                    !isSelected && isExpanded && hasSubCategories && styles.categoryTextExpanded,
                   ]}
                 >
                   {item.name}
@@ -281,17 +144,16 @@ export default function DrawerMenu({ visible, onClose }: Props) {
               </View>
             </TouchableOpacity>
 
-            {/* Subcategories - shown below the category */}
             {isExpanded && hasSubCategories && (
               <View style={styles.subCategoryContainer}>
-                {item.subCategories.map((sub, index) => (
+                {item.subCategories.map((sub) => (
                   <TouchableOpacity
-                    key={index}
+                    key={sub.id}
                     style={styles.subItem}
-                    onPress={() => handleSubCategoryPress(item.name, sub)}
+                    onPress={() => handleSubCategoryPress(item.name, sub.name)}
                     activeOpacity={0.7}
                   >
-                    <Text style={styles.subItemText}>{sub}</Text>
+                    <Text style={styles.subItemText}>{sub.name}</Text>
                   </TouchableOpacity>
                 ))}
               </View>
@@ -306,7 +168,7 @@ export default function DrawerMenu({ visible, onClose }: Props) {
     <>
       {visible && (
         <Pressable
-          style={[styles.overlay, { backgroundColor: Colors.drawer.overlay }]}
+          style={[styles.overlay]}
           onPress={onClose}
         />
       )}
@@ -326,10 +188,7 @@ export default function DrawerMenu({ visible, onClose }: Props) {
             contentContainerStyle={styles.scrollContent}
             showsVerticalScrollIndicator={false}
           >
-            {/* Shop Item */}
             {renderShopLevel()}
-
-            {/* Categories - Shown when showCategories is true */}
             {showCategories && renderCategories()}
           </ScrollView>
         </SafeAreaView>
@@ -346,8 +205,8 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     zIndex: 10,
+    backgroundColor: 'rgba(0,0,0,0.5)',
   },
-
   drawer: {
     position: "absolute",
     left: 0,
@@ -364,101 +223,68 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     elevation: 5,
   },
-
   safeArea: {
     flex: 1,
     paddingTop: 50,
   },
-
   scrollView: {
     flex: 1,
   },
-
   scrollContent: {
     paddingHorizontal: 24,
     paddingBottom: 30,
   },
-
-  headerContainer: {
-    marginBottom: 8,
-  },
-
   divider: {
     height: 1,
     backgroundColor: '#2A2A2A',
     marginBottom: 12,
   },
-
-  // Shop styles
   shopItem: {
     paddingVertical: 14,
     paddingHorizontal: 12,
     borderRadius: 8,
     marginBottom: 4,
   },
-
   shopItemSelected: {
     backgroundColor: '#ff002b', 
   },
-
   shopText: {
     flex: 1,
     fontSize: 18,
     fontWeight: "600",
     color: '#FFFFFF',
   },
-
-  // Common styles
   itemContent: {
     flexDirection: "row",
     alignItems: "center",
   },
-
   itemIcon: {
     marginRight: 14,
   },
-
   chevronIcon: {
     marginLeft: 8,
   },
-
-  // Category styles
   categoryWrapper: {
     marginBottom: 2,
   },
-
   categoryItem: {
     paddingVertical: 12,
     borderRadius: 8,
     paddingHorizontal: 12,
   },
-
   categoryItemSelected: {
     backgroundColor: '#ff002b', 
   },
-
-  categoryItemExpanded: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-  },
-
   categoryText: {
     flex: 1,
     fontSize: 16,
     fontWeight: "400",
     color: '#FFFFFF',
   },
-
   categoryTextSelected: {
     color: '#FFFFFF',
     fontWeight: "500",
   },
-
-  categoryTextExpanded: {
-    color: '#FFFFFF',
-    fontWeight: "400",
-  },
-
-  // Subcategories styles
   subCategoryContainer: {
     marginLeft: 12,
     marginBottom: 8,
@@ -466,12 +292,10 @@ const styles = StyleSheet.create({
     borderLeftWidth: 1,
     borderLeftColor: 'rgba(255, 255, 255, 0.1)',
   },
-
   subItem: {
     paddingVertical: 8,
     paddingLeft: 4,
   },
-
   subItemText: {
     fontSize: 15,
     color: '#8A8AA8',
