@@ -28,7 +28,7 @@ const menuData = [
     id: "1",
     name: "Shop",
     icon: "storefront-outline",
-    subCategories: [], // Empty array - no subcategories
+    subCategories: [],
   },
   {
     id: "2",
@@ -157,44 +157,50 @@ const menuData = [
 ];
 
 export default function DrawerMenu({ visible, onClose }: Props) {
-  // Navigation state
   const [showCategories, setShowCategories] = useState(false);
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [isShopSelected, setIsShopSelected] = useState(false);
   
   const translateX = useRef(new Animated.Value(-SCREEN_WIDTH)).current;
 
   useEffect(() => {
     Animated.timing(translateX, {
       toValue: visible ? 0 : -SCREEN_WIDTH,
-      duration: visible ? 250 : 200,
+      duration: 250,
       useNativeDriver: true,
     }).start();
 
-    // Reset to shop level when drawer opens
     if (visible) {
+      // Reset when drawer opens
       setShowCategories(false);
       setExpandedCategory(null);
+      setSelectedCategory(null);
+      setIsShopSelected(false);
     }
   }, [visible]);
 
-  // Handle Shop click - show categories
   const handleShopPress = () => {
-    setShowCategories(true);
-    setExpandedCategory(null);
+    // Toggle categories visibility and select shop
+    setShowCategories(!showCategories);
+    setIsShopSelected(true); // Shop is now selected
+    setSelectedCategory("shop");
+    if (!showCategories) {
+      setExpandedCategory(null);
+    }
   };
 
-  // Handle back to Shop
-  const handleBackToShop = () => {
-    setShowCategories(false);
-    setExpandedCategory(null);
-  };
-
-  // Toggle category expansion
   const toggleCategory = (id: string) => {
-    setExpandedCategory(expandedCategory === id ? null : id);
+    // Keep shop selected
+    setIsShopSelected(true);
+    if (selectedCategory === id) {
+      setExpandedCategory(expandedCategory === id ? null : id);
+    } else {
+      setSelectedCategory(id);
+      setExpandedCategory(id);
+    }
   };
 
-  // Handle subcategory click
   const handleSubCategoryPress = (categoryName: string, sub: string) => {
     console.log(`Category: ${categoryName}, Subcategory: ${sub}`);
     onClose();
@@ -203,7 +209,10 @@ export default function DrawerMenu({ visible, onClose }: Props) {
   // Render Shop level (only "Shop" item)
   const renderShopLevel = () => (
     <TouchableOpacity
-      style={styles.shopItem}
+      style={[
+        styles.shopItem,
+        isShopSelected && styles.shopItemSelected // Red when shop is selected
+      ]}
       onPress={handleShopPress}
       activeOpacity={0.7}
     >
@@ -211,42 +220,29 @@ export default function DrawerMenu({ visible, onClose }: Props) {
         <Ionicons
           name="storefront-outline"
           size={24}
-          color={Colors.drawer.iconColor}
+          color="#FFFFFF"
           style={styles.itemIcon}
         />
         <Text style={styles.shopText}>Shop</Text>
         <Ionicons
-          name="chevron-forward-outline"
+          name={showCategories ? "chevron-up" : "chevron-down"}
           size={20}
-          color={Colors.drawer.iconColor}
+          color={isShopSelected ? "#FFFFFF" : "#8A8AA8"}
           style={styles.chevronIcon}
         />
       </View>
     </TouchableOpacity>
   );
 
-  // Render Categories level with expandable subcategories
-  const renderCategoriesLevel = () => (
+  // Render Categories
+  const renderCategories = () => (
     <>
-      {/* Back button */}
-      <TouchableOpacity
-        style={styles.backButton}
-        onPress={handleBackToShop}
-        activeOpacity={0.7}
-      >
-        <Ionicons
-          name="arrow-back-outline"
-          size={24}
-          color={Colors.drawer.categoryText}
-        />
-        <Text style={styles.backButtonText}>Shop</Text>
-      </TouchableOpacity>
-
       <View style={styles.divider} />
 
       {/* All categories (excluding "Shop" itself) */}
       {menuData.slice(1).map((item) => {
         const isExpanded = expandedCategory === item.id;
+        const isSelected = selectedCategory === item.id;
         const hasSubCategories = item.subCategories.length > 0;
 
         return (
@@ -255,26 +251,18 @@ export default function DrawerMenu({ visible, onClose }: Props) {
             <TouchableOpacity
               style={[
                 styles.categoryItem,
-                isExpanded && hasSubCategories && styles.categoryItemExpanded,
+                isSelected && styles.categoryItemSelected,
+                !isSelected && isExpanded && hasSubCategories && styles.categoryItemExpanded,
               ]}
               onPress={() => toggleCategory(item.id)}
               activeOpacity={0.7}
             >
               <View style={styles.itemContent}>
-                <Ionicons
-                  name={item.icon as any}
-                  size={22}
-                  color={
-                    isExpanded && hasSubCategories
-                      ? Colors.brand.accent
-                      : Colors.drawer.iconColor
-                  }
-                  style={styles.itemIcon}
-                />
                 <Text
                   style={[
                     styles.categoryText,
-                    isExpanded && hasSubCategories && styles.categoryTextExpanded,
+                    isSelected && styles.categoryTextSelected,
+                    !isSelected && isExpanded && hasSubCategories && styles.categoryTextExpanded,
                   ]}
                 >
                   {item.name}
@@ -283,7 +271,8 @@ export default function DrawerMenu({ visible, onClose }: Props) {
                   <Ionicons
                     name={isExpanded ? "chevron-up" : "chevron-down"}
                     size={20}
-                    color={Colors.drawer.iconColor}
+                    color={isSelected ? "#FFFFFF" : "#8A8AA8"}
+                    style={styles.chevronIcon}
                   />
                 )}
               </View>
@@ -299,7 +288,7 @@ export default function DrawerMenu({ visible, onClose }: Props) {
                     onPress={() => handleSubCategoryPress(item.name, sub)}
                     activeOpacity={0.7}
                   >
-                    <Text style={styles.subItemText}>• {sub}</Text>
+                    <Text style={styles.subItemText}>{sub}</Text>
                   </TouchableOpacity>
                 ))}
               </View>
@@ -324,7 +313,7 @@ export default function DrawerMenu({ visible, onClose }: Props) {
           styles.drawer,
           {
             transform: [{ translateX }],
-            backgroundColor: Colors.drawer.background,
+            backgroundColor: '#000000', 
           },
         ]}
       >
@@ -334,7 +323,13 @@ export default function DrawerMenu({ visible, onClose }: Props) {
             contentContainerStyle={styles.scrollContent}
             showsVerticalScrollIndicator={false}
           >
-            {showCategories ? renderCategoriesLevel() : renderShopLevel()}
+
+
+            {/* Shop Item */}
+            {renderShopLevel()}
+
+            {/* Categories - Shown when showCategories is true */}
+            {showCategories && renderCategories()}
           </ScrollView>
         </SafeAreaView>
       </Animated.View>
@@ -383,17 +378,35 @@ const styles = StyleSheet.create({
     paddingBottom: 30,
   },
 
-  // Shop level styles
+  // Header styles
+  headerContainer: {
+    marginBottom: 8,
+  },
+
+
+  divider: {
+    height: 1,
+    backgroundColor: '#2A2A2A',
+    marginBottom: 12,
+  },
+
+  // Shop styles
   shopItem: {
-    paddingVertical: 16,
+    paddingVertical: 14,
+    paddingHorizontal: 12,
     borderRadius: 8,
+    marginBottom: 4,
+  },
+
+  shopItemSelected: {
+    backgroundColor: '#ff002b', // Red when selected
   },
 
   shopText: {
     flex: 1,
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: "600",
-    color: Colors.drawer.categoryText,
+    color: '#FFFFFF',
   },
 
   // Common styles
@@ -410,68 +423,59 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
 
-  // Categories level styles
-  backButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 12,
-    marginBottom: 8,
-  },
-
-  backButtonText: {
-    fontSize: 20,
-    fontWeight: "600",
-    color: Colors.drawer.categoryText,
-    marginLeft: 12,
-  },
-
-  divider: {
-    height: 1,
-    backgroundColor: "#E5E5E5",
-    marginBottom: 12,
-  },
-
+  // Category styles
   categoryWrapper: {
     marginBottom: 2,
   },
 
   categoryItem: {
-    paddingVertical: 14,
+    paddingVertical: 12,
     borderRadius: 8,
+    paddingHorizontal: 12,
+  },
+
+  categoryItemSelected: {
+    backgroundColor: '#ff002b', // Red when selected
   },
 
   categoryItemExpanded: {
-    backgroundColor: "#F8F8FC",
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
   },
 
   categoryText: {
     flex: 1,
     fontSize: 16,
+    fontWeight: "400",
+    color: '#FFFFFF',
+  },
+
+  categoryTextSelected: {
+    color: '#FFFFFF',
     fontWeight: "500",
-    color: Colors.drawer.categoryText,
   },
 
   categoryTextExpanded: {
-    color: Colors.brand.accent,
-    fontWeight: "600",
+    color: '#FFFFFF',
+    fontWeight: "400",
   },
 
   // Subcategories styles
   subCategoryContainer: {
-    marginLeft: 18,
+    marginLeft: 12,
     marginBottom: 8,
+    paddingLeft: 12,
     borderLeftWidth: 1,
-    borderLeftColor: "#050505",
-    paddingLeft: 18,
+    borderLeftColor: 'rgba(255, 255, 255, 0.1)',
   },
-  
 
   subItem: {
-    paddingVertical: 10,
+    paddingVertical: 8,
+    paddingLeft: 4,
   },
 
   subItemText: {
     fontSize: 15,
-    color: Colors.drawer.subCategoryText,
+    color: '#8A8AA8',
+    fontWeight: "400",
   },
 });
