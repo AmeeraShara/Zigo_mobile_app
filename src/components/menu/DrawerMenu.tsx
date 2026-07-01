@@ -1,5 +1,3 @@
-// components/menu/DrawerMenu.tsx
-
 import React, { useState, useEffect, useRef } from "react";
 import {
   View,
@@ -181,9 +179,8 @@ export default function DrawerMenu({ visible, onClose }: Props) {
   }, [visible]);
 
   const handleShopPress = () => {
-    // Toggle categories visibility and select shop
     setShowCategories(!showCategories);
-    setIsShopSelected(true); // Shop is now selected
+    setIsShopSelected(true); 
     setSelectedCategory("shop");
     if (!showCategories) {
       setExpandedCategory(null);
@@ -211,7 +208,7 @@ export default function DrawerMenu({ visible, onClose }: Props) {
     <TouchableOpacity
       style={[
         styles.shopItem,
-        isShopSelected && styles.shopItemSelected // Red when shop is selected
+        isShopSelected && styles.shopItemSelected 
       ]}
       onPress={handleShopPress}
       activeOpacity={0.7}
@@ -399,7 +396,7 @@ const styles = StyleSheet.create({
   },
 
   shopItemSelected: {
-    backgroundColor: '#ff002b', // Red when selected
+    backgroundColor: '#ff002b', 
   },
 
   shopText: {
@@ -435,7 +432,7 @@ const styles = StyleSheet.create({
   },
 
   categoryItemSelected: {
-    backgroundColor: '#ff002b', // Red when selected
+    backgroundColor: '#ff002b', 
   },
 
   categoryItemExpanded: {
