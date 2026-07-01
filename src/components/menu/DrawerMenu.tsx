@@ -461,9 +461,10 @@ const styles = StyleSheet.create({
     marginLeft: 18,
     marginBottom: 8,
     borderLeftWidth: 1,
-    borderLeftColor: "#E5E5E5",
+    borderLeftColor: "#050505",
     paddingLeft: 18,
   },
+  
 
   subItem: {
     paddingVertical: 10,
