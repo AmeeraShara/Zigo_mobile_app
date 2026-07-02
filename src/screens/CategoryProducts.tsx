@@ -27,7 +27,7 @@ const mockProducts = [
     code: "ANK-GAN65",
     brand: "ANKER",
     price: 3490.0,
-    image: "https://via.placeholder.com/300x300/ff002b/ffffff?text=65W+GaN",
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTVRxDLhoOUb6s3gxbb-fVAX1pQr1jMg46uy4ecDVZn5g&s=10",
     inStock: true,
     category: "Fast Chargers",
     rating: 4.5,
@@ -39,7 +39,7 @@ const mockProducts = [
     code: "OM4A3",
     brand: "OMS",
     price: 1980.0,
-    image: "https://via.placeholder.com/300x300/ff002b/ffffff?text=100W+GaN",
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQuoom73SCcn5FaeIbaIqPQ1--4ZcG6cSJey93HN7izvQ&s=10",
     inStock: false,
     category: "Fast Chargers",
     rating: 4.3,
@@ -51,7 +51,7 @@ const mockProducts = [
     code: "OM4A2",
     brand: "OMS",
     price: 595.0,
-    image: "https://via.placeholder.com/300x300/ff002b/ffffff?text=15W+Lightning",
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTosNUxCO5PKTnk2mLKjxIgau1Mt3AHc3xy0BVcZlqm4A&s=10",
     inStock: true,
     category: "Fast Chargers",
     rating: 4.1,
@@ -63,7 +63,7 @@ const mockProducts = [
     code: "OM4A2",
     brand: "OMS",
     price: 690.0,
-    image: "https://via.placeholder.com/300x300/ff002b/ffffff?text=15W+Micro",
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQX704vTe9xVVLGinJvfwEICTi3nToyfViskVRUl5am2Q&s=10",
     inStock: true,
     category: "Fast Chargers",
     rating: 4.0,
@@ -75,7 +75,7 @@ const mockProducts = [
     code: "OM4A2",
     brand: "OMS",
     price: 690.0,
-    image: "https://via.placeholder.com/300x300/ff002b/ffffff?text=15W+Type+C",
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ8C3ySPqp53HswMQSZl-miv02_jQBGrNxGzdqsHzlzqw&s=10",
     inStock: true,
     category: "Fast Chargers",
     rating: 4.2,
@@ -87,7 +87,7 @@ const mockProducts = [
     code: "OM4A2",
     brand: "OMS",
     price: 895.0,
-    image: "https://via.placeholder.com/300x300/ff002b/ffffff?text=18W+Lightning",
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSHfMGIaftZogHYZ3d7qSHa1eG24XiSWUeNAl20TLC7CQ&s=10",
     inStock: true,
     category: "Fast Chargers",
     rating: 4.4,
@@ -222,7 +222,11 @@ export default function CategoryProducts() {
           })}
         >
           <View style={styles.productImageContainer}>
-            <Image source={{ uri: item.image }} style={styles.productImage} />
+            <Image 
+              source={{ uri: item.image }} 
+              style={styles.productImage}
+              resizeMode="contain"  // Changed from "cover" to "contain"
+            />
             <View style={styles.productBadge}>
               <Text style={styles.badgeText}>{item.category}</Text>
             </View>
@@ -277,13 +281,12 @@ export default function CategoryProducts() {
         {/* Quantity Selector and Add to Cart */}
         {!isOutOfStock ? (
           <View style={styles.actionContainer}>
-            {/* Quantity Stepper - Always visible */}
             <View style={styles.quantityContainer}>
               <TouchableOpacity
                 style={styles.quantityButton}
                 onPress={() => decrementQuantity(item.id)}
               >
-                <Ionicons name="remove" size={18} color="#FF002B" />
+                <Ionicons name="remove" size={16} color="#FF002B" />
               </TouchableOpacity>
               
               <Text style={styles.quantityText}>{quantity}</Text>
@@ -292,30 +295,28 @@ export default function CategoryProducts() {
                 style={styles.quantityButton}
                 onPress={() => incrementQuantity(item.id, item.inStock)}
               >
-                <Ionicons name="add" size={18} color="#FF002B" />
+                <Ionicons name="add" size={16} color="#FF002B" />
               </TouchableOpacity>
             </View>
 
-            {/* Add to Cart Button - Always visible */}
             <TouchableOpacity
               style={styles.addToCartButton}
               onPress={() => handleAddToCart(item)}
             >
-              <Ionicons name="cart-outline" size={18} color="#FFFFFF" />
+              <Ionicons name="cart-outline" size={16} color="#FFFFFF" />
               <Text style={styles.addToCartText}>
-                Add {quantity} to Cart
+                Add {quantity}
               </Text>
             </TouchableOpacity>
           </View>
         ) : (
-          // Show disabled state for out of stock
           <View style={styles.actionContainer}>
             <View style={[styles.quantityContainer, styles.quantityDisabled]}>
               <TouchableOpacity
                 style={styles.quantityButton}
                 disabled={true}
               >
-                <Ionicons name="remove" size={18} color="#B0B0B0" />
+                <Ionicons name="remove" size={16} color="#B0B0B0" />
               </TouchableOpacity>
               
               <Text style={[styles.quantityText, styles.quantityTextDisabled]}>
@@ -326,7 +327,7 @@ export default function CategoryProducts() {
                 style={styles.quantityButton}
                 disabled={true}
               >
-                <Ionicons name="add" size={18} color="#B0B0B0" />
+                <Ionicons name="add" size={16} color="#B0B0B0" />
               </TouchableOpacity>
             </View>
 
@@ -334,7 +335,7 @@ export default function CategoryProducts() {
               style={[styles.addToCartButton, styles.addToCartDisabled]}
               disabled={true}
             >
-              <Ionicons name="cart-outline" size={18} color="#B0B0B0" />
+              <Ionicons name="cart-outline" size={16} color="#B0B0B0" />
               <Text style={styles.addToCartTextDisabled}>Out of Stock</Text>
             </TouchableOpacity>
           </View>
@@ -370,33 +371,10 @@ export default function CategoryProducts() {
         </TouchableOpacity>
       </View>
 
-      {/* Search Bar */}
-      {/* <View style={styles.searchContainer}>
-        <Ionicons
-          name="search-outline"
-          size={20}
-          color="#8A8AA8"
-          style={styles.searchIcon}
-        />
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search products..."
-          placeholderTextColor="#8A8AA8"
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-        />
-        {searchQuery.length > 0 && (
-          <TouchableOpacity onPress={() => setSearchQuery("")}>
-            <Ionicons name="close-circle" size={20} color="#8A8AA8" />
-          </TouchableOpacity>
-        )}
-      </View> */}
-
-      {/* Brand Section - Two Lines */}
+      {/* Brand Section */}
       <View style={styles.brandSection}>
         <Text style={styles.sectionLabel}>All Brands</Text>
         
-        {/* First Row */}
         <View style={styles.brandRow}>
           {firstRowBrands.map((brand) => (
             <TouchableOpacity
@@ -409,7 +387,7 @@ export default function CategoryProducts() {
             >
               <Ionicons
                 name={brand.icon as any}
-                size={16}
+                size={14}
                 color={selectedBrand === brand.id ? "#FFFFFF" : "#4A4A6A"}
               />
               <Text
@@ -424,7 +402,6 @@ export default function CategoryProducts() {
           ))}
         </View>
 
-        {/* Second Row */}
         <View style={styles.brandRow}>
           {secondRowBrands.map((brand) => (
             <TouchableOpacity
@@ -437,7 +414,7 @@ export default function CategoryProducts() {
             >
               <Ionicons
                 name={brand.icon as any}
-                size={16}
+                size={14}
                 color={selectedBrand === brand.id ? "#FFFFFF" : "#4A4A6A"}
               />
               <Text
@@ -462,13 +439,13 @@ export default function CategoryProducts() {
           style={styles.sortButton}
           onPress={() => setShowSortOptions(!showSortOptions)}
         >
-          <Ionicons name="swap-vertical-outline" size={18} color="#4A4A6A" />
+          <Ionicons name="swap-vertical-outline" size={16} color="#4A4A6A" />
           <Text style={styles.sortButtonText}>
             {sortOptions.find((s) => s.id === selectedSort)?.label}
           </Text>
           <Ionicons
             name={showSortOptions ? "chevron-up" : "chevron-down"}
-            size={16}
+            size={14}
             color="#4A4A6A"
           />
         </TouchableOpacity>
@@ -498,7 +475,7 @@ export default function CategoryProducts() {
                 {option.label}
               </Text>
               {selectedSort === option.id && (
-                <Ionicons name="checkmark" size={18} color="#FF002B" />
+                <Ionicons name="checkmark" size={16} color="#FF002B" />
               )}
             </TouchableOpacity>
           ))}
@@ -535,7 +512,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingVertical: 10,
     backgroundColor: "#FFFFFF",
     borderBottomWidth: 1,
     borderBottomColor: "#E8E8F0",
@@ -548,14 +525,14 @@ const styles = StyleSheet.create({
     marginLeft: 12,
   },
   headerTitle: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: "600",
     color: "#1A1A2E",
   },
   headerSubtitle: {
-    fontSize: 12,
+    fontSize: 11,
     color: "#8A8AA8",
-    marginTop: 2,
+    marginTop: 1,
   },
   cartButton: {
     padding: 4,
@@ -578,60 +555,41 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     paddingHorizontal: 4,
   },
-  searchContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#FFFFFF",
-    margin: 16,
-    paddingHorizontal: 12,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: "#E8E8F0",
-  },
-  searchIcon: {
-    marginRight: 8,
-  },
-  searchInput: {
-    flex: 1,
-    paddingVertical: 12,
-    fontSize: 14,
-    color: "#1A1A2E",
-  },
   brandSection: {
     paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingVertical: 10,
     backgroundColor: "#FFFFFF",
   },
   sectionLabel: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: "600",
     color: "#1A1A2E",
-    marginBottom: 10,
+    marginBottom: 8,
   },
   brandRow: {
     flexDirection: "row",
     flexWrap: "wrap",
-    marginBottom: 8,
+    marginBottom: 6,
   },
   brandButton: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 20,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 18,
     backgroundColor: "#F0F0F5",
-    marginRight: 8,
-    marginBottom: 8,
+    marginRight: 6,
+    marginBottom: 6,
     borderWidth: 1,
     borderColor: "transparent",
-    gap: 6,
+    gap: 4,
   },
   brandButtonActive: {
     backgroundColor: "#FF002B",
     borderColor: "#FF002B",
   },
   brandButtonText: {
-    fontSize: 13,
+    fontSize: 12,
     color: "#4A4A6A",
     fontWeight: "500",
   },
@@ -643,22 +601,22 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: 16,
-    paddingVertical: 10,
+    paddingVertical: 8,
     backgroundColor: "#FFFFFF",
     marginTop: 1,
   },
   productCount: {
-    fontSize: 13,
+    fontSize: 12,
     color: "#8A8AA8",
     fontWeight: "500",
   },
   sortButton: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 6,
+    gap: 4,
   },
   sortButtonText: {
-    fontSize: 13,
+    fontSize: 12,
     color: "#4A4A6A",
     fontWeight: "500",
   },
@@ -666,7 +624,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     marginHorizontal: 16,
     marginTop: 4,
-    borderRadius: 12,
+    borderRadius: 10,
     borderWidth: 1,
     borderColor: "#E8E8F0",
     paddingVertical: 4,
@@ -680,14 +638,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingHorizontal: 16,
-    paddingVertical: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
   },
   sortOptionActive: {
     backgroundColor: "#FFF5F5",
   },
   sortOptionText: {
-    fontSize: 14,
+    fontSize: 13,
     color: "#4A4A6A",
   },
   sortOptionTextActive: {
@@ -695,41 +653,41 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   productList: {
-    padding: 16,
+    padding: 12,
   },
   productCard: {
     backgroundColor: "#FFFFFF",
-    borderRadius: 12,
-    marginBottom: 16,
+    borderRadius: 10,
+    marginBottom: 12,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
+    shadowRadius: 4,
+    elevation: 1,
     overflow: "hidden",
   },
   productImageContainer: {
     width: "100%",
-    height: 200,
+    height: 150,
     backgroundColor: "#F5F6FA",
     position: "relative",
   },
   productImage: {
     width: "100%",
     height: "100%",
-    resizeMode: "cover",
+    // resizeMode: "contain" is set inline
   },
   productBadge: {
     position: "absolute",
-    top: 12,
-    left: 12,
+    top: 8,
+    left: 8,
     backgroundColor: "rgba(255, 0, 43, 0.9)",
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 6,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 4,
   },
   badgeText: {
-    fontSize: 10,
+    fontSize: 9,
     color: "#FFFFFF",
     fontWeight: "600",
     textTransform: "uppercase",
@@ -746,44 +704,44 @@ const styles = StyleSheet.create({
   },
   outOfStockText: {
     color: "#FFFFFF",
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: "700",
     textTransform: "uppercase",
     backgroundColor: "rgba(0,0,0,0.7)",
-    paddingHorizontal: 16,
-    paddingVertical: 6,
-    borderRadius: 8,
+    paddingHorizontal: 14,
+    paddingVertical: 4,
+    borderRadius: 6,
   },
   productContent: {
-    padding: 12,
+    padding: 10,
   },
   productCode: {
-    fontSize: 11,
+    fontSize: 10,
     color: "#8A8AA8",
     fontWeight: "500",
-    marginBottom: 4,
+    marginBottom: 2,
     letterSpacing: 0.5,
   },
   productName: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: "600",
     color: "#1A1A2E",
-    marginBottom: 6,
-    lineHeight: 20,
+    marginBottom: 4,
+    lineHeight: 18,
   },
   productMeta: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 8,
+    marginBottom: 6,
   },
   brandContainer: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 4,
+    gap: 3,
   },
   brandName: {
-    fontSize: 12,
+    fontSize: 11,
     color: "#8A8AA8",
   },
   ratingContainer: {
@@ -792,29 +750,29 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   ratingText: {
-    fontSize: 12,
+    fontSize: 11,
     color: "#4A4A6A",
     fontWeight: "500",
   },
   reviewText: {
-    fontSize: 11,
+    fontSize: 10,
     color: "#8A8AA8",
   },
   priceRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 10,
+    marginBottom: 6,
   },
   productPrice: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: "700",
     color: "#1A1A2E",
   },
   stockBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 4,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 3,
   },
   inStock: {
     backgroundColor: "#E8F5E9",
@@ -823,7 +781,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FBE9E7",
   },
   stockText: {
-    fontSize: 11,
+    fontSize: 10,
     fontWeight: "500",
   },
   inStockText: {
@@ -833,38 +791,40 @@ const styles = StyleSheet.create({
     color: "#EF4444",
   },
   actionContainer: {
-    flexDirection: "column",
-    paddingHorizontal: 12,
-    paddingBottom: 12,
-    gap: 8,
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 10,
+    paddingBottom: 10,
+    gap: 6,
   },
   quantityContainer: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#FFF5F5",
-    borderRadius: 8,
+    borderRadius: 6,
     borderWidth: 1,
     borderColor: "#FFE5E5",
-    paddingHorizontal: 4,
-    paddingVertical: 4,
+    paddingHorizontal: 2,
+    paddingVertical: 2,
+    flex: 1,
   },
   quantityDisabled: {
     backgroundColor: "#F5F5F5",
     borderColor: "#E8E8F0",
   },
   quantityButton: {
-    padding: 8,
-    borderRadius: 6,
+    padding: 6,
+    borderRadius: 4,
     backgroundColor: "#FFFFFF",
-    minWidth: 36,
+    minWidth: 30,
     alignItems: "center",
   },
   quantityText: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: "600",
     color: "#1A1A2E",
-    minWidth: 40,
+    minWidth: 32,
     textAlign: "center",
   },
   quantityTextDisabled: {
@@ -874,31 +834,33 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    gap: 8,
+    gap: 4,
     backgroundColor: "#FF002B",
-    paddingVertical: 12,
-    borderRadius: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 8,
+    borderRadius: 6,
     borderWidth: 1,
     borderColor: "#FF002B",
+    flex: 2,
   },
   addToCartDisabled: {
     backgroundColor: "#F5F5F5",
     borderColor: "#E8E8F0",
   },
   addToCartText: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: "600",
     color: "#FFFFFF",
   },
   addToCartTextDisabled: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: "600",
     color: "#B0B0B0",
   },
   emptyContainer: {
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 60,
+    paddingVertical: 40,
   },
   emptyText: {
     fontSize: 16,
