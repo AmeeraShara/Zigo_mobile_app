@@ -18,6 +18,8 @@ import {
 } from "react-native";
 
 const { width } = Dimensions.get("window");
+const CARD_MARGIN = 6;
+const CARD_WIDTH = (width - 24 - CARD_MARGIN) / 2; // 24 for padding, 6 for margin
 
 // Mock products data
 const mockProducts = [
@@ -220,12 +222,13 @@ export default function CategoryProducts() {
             pathname: "/product-detail",
             params: { productId: item.id }
           })}
+          style={styles.cardContent}
         >
           <View style={styles.productImageContainer}>
             <Image 
               source={{ uri: item.image }} 
               style={styles.productImage}
-              resizeMode="contain"  // Changed from "cover" to "contain"
+              resizeMode="contain"
             />
             <View style={styles.productBadge}>
               <Text style={styles.badgeText}>{item.category}</Text>
@@ -278,65 +281,59 @@ export default function CategoryProducts() {
           </View>
         </TouchableOpacity>
 
-        {/* Quantity Selector and Add to Cart */}
+        {/* Quantity Selector and Add to Cart - Same Line at Bottom */}
         {!isOutOfStock ? (
-          <View style={styles.actionContainer}>
-            <View style={styles.quantityContainer}>
-              <TouchableOpacity
-                style={styles.quantityButton}
-                onPress={() => decrementQuantity(item.id)}
-              >
-                <Ionicons name="remove" size={16} color="#FF002B" />
-              </TouchableOpacity>
-              
-              <Text style={styles.quantityText}>{quantity}</Text>
-              
-              <TouchableOpacity
-                style={styles.quantityButton}
-                onPress={() => incrementQuantity(item.id, item.inStock)}
-              >
-                <Ionicons name="add" size={16} color="#FF002B" />
-              </TouchableOpacity>
-            </View>
+          <View style={styles.actionRow}>
+            <TouchableOpacity
+              style={styles.quantityBtn}
+              onPress={() => decrementQuantity(item.id)}
+            >
+              <Ionicons name="remove" size={14} color="#FF002B" />
+            </TouchableOpacity>
+            
+            <Text style={styles.qtyText}>{quantity}</Text>
+            
+            <TouchableOpacity
+              style={styles.quantityBtn}
+              onPress={() => incrementQuantity(item.id, item.inStock)}
+            >
+              <Ionicons name="add" size={14} color="#FF002B" />
+            </TouchableOpacity>
 
             <TouchableOpacity
-              style={styles.addToCartButton}
+              style={styles.addBtn}
               onPress={() => handleAddToCart(item)}
             >
-              <Ionicons name="cart-outline" size={16} color="#FFFFFF" />
-              <Text style={styles.addToCartText}>
-                Add {quantity}
-              </Text>
+              <Ionicons name="cart-outline" size={14} color="#FFFFFF" />
+              <Text style={styles.addBtnText}>Add</Text>
             </TouchableOpacity>
           </View>
         ) : (
-          <View style={styles.actionContainer}>
-            <View style={[styles.quantityContainer, styles.quantityDisabled]}>
-              <TouchableOpacity
-                style={styles.quantityButton}
-                disabled={true}
-              >
-                <Ionicons name="remove" size={16} color="#B0B0B0" />
-              </TouchableOpacity>
-              
-              <Text style={[styles.quantityText, styles.quantityTextDisabled]}>
-                {quantity}
-              </Text>
-              
-              <TouchableOpacity
-                style={styles.quantityButton}
-                disabled={true}
-              >
-                <Ionicons name="add" size={16} color="#B0B0B0" />
-              </TouchableOpacity>
-            </View>
-
+          <View style={styles.actionRow}>
             <TouchableOpacity
-              style={[styles.addToCartButton, styles.addToCartDisabled]}
+              style={[styles.quantityBtn, styles.quantityBtnDisabled]}
               disabled={true}
             >
-              <Ionicons name="cart-outline" size={16} color="#B0B0B0" />
-              <Text style={styles.addToCartTextDisabled}>Out of Stock</Text>
+              <Ionicons name="remove" size={14} color="#B0B0B0" />
+            </TouchableOpacity>
+            
+            <Text style={[styles.qtyText, styles.qtyTextDisabled]}>
+              {quantity}
+            </Text>
+            
+            <TouchableOpacity
+              style={[styles.quantityBtn, styles.quantityBtnDisabled]}
+              disabled={true}
+            >
+              <Ionicons name="add" size={14} color="#B0B0B0" />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.addBtn, styles.addBtnDisabled]}
+              disabled={true}
+            >
+              <Ionicons name="cart-outline" size={14} color="#B0B0B0" />
+              <Text style={styles.addBtnTextDisabled}>Out</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -482,11 +479,14 @@ export default function CategoryProducts() {
         </View>
       )}
 
-      {/* Product List */}
+      {/* Product List - Updated to show 2 columns */}
       <FlatList
+        key="two-columns"
         data={filteredProducts}
         renderItem={renderProductCard}
         keyExtractor={(item) => item.id}
+        numColumns={2}
+        columnWrapperStyle={styles.columnWrapper}
         contentContainerStyle={styles.productList}
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={
@@ -655,7 +655,13 @@ const styles = StyleSheet.create({
   productList: {
     padding: 12,
   },
+  columnWrapper: {
+    justifyContent: 'space-between',
+    gap: 6,
+  },
   productCard: {
+    flex: 1,
+    maxWidth: CARD_WIDTH,
     backgroundColor: "#FFFFFF",
     borderRadius: 10,
     marginBottom: 12,
@@ -665,6 +671,10 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 1,
     overflow: "hidden",
+    height: 340, // Fixed height for all cards
+  },
+  cardContent: {
+    flex: 1,
   },
   productImageContainer: {
     width: "100%",
@@ -675,7 +685,6 @@ const styles = StyleSheet.create({
   productImage: {
     width: "100%",
     height: "100%",
-    // resizeMode: "contain" is set inline
   },
   productBadge: {
     position: "absolute",
@@ -714,6 +723,7 @@ const styles = StyleSheet.create({
   },
   productContent: {
     padding: 10,
+    flex: 1,
   },
   productCode: {
     fontSize: 10,
@@ -728,6 +738,7 @@ const styles = StyleSheet.create({
     color: "#1A1A2E",
     marginBottom: 4,
     lineHeight: 18,
+    height: 36, // Fixed height for 2 lines
   },
   productMeta: {
     flexDirection: "row",
@@ -762,7 +773,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 6,
+    marginBottom: 0,
   },
   productPrice: {
     fontSize: 14,
@@ -790,70 +801,64 @@ const styles = StyleSheet.create({
   outOfStockText2: {
     color: "#EF4444",
   },
-  actionContainer: {
+  // Horizontal layout styles - everything in one row at bottom
+  actionRow: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 10,
-    paddingBottom: 10,
-    gap: 6,
+    paddingHorizontal: 8,
+    paddingBottom: 8,
+    paddingTop: 4,
+    gap: 4,
+    borderTopWidth: 1,
+    borderTopColor: "#F0F0F5",
   },
-  quantityContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
+  quantityBtn: {
+    padding: 4,
+    borderRadius: 4,
     backgroundColor: "#FFF5F5",
-    borderRadius: 6,
     borderWidth: 1,
     borderColor: "#FFE5E5",
-    paddingHorizontal: 2,
-    paddingVertical: 2,
-    flex: 1,
+    minWidth: 28,
+    alignItems: "center",
+    justifyContent: "center",
   },
-  quantityDisabled: {
+  quantityBtnDisabled: {
     backgroundColor: "#F5F5F5",
     borderColor: "#E8E8F0",
   },
-  quantityButton: {
-    padding: 6,
-    borderRadius: 4,
-    backgroundColor: "#FFFFFF",
-    minWidth: 30,
-    alignItems: "center",
-  },
-  quantityText: {
-    fontSize: 14,
+  qtyText: {
+    fontSize: 13,
     fontWeight: "600",
     color: "#1A1A2E",
-    minWidth: 32,
+    minWidth: 24,
     textAlign: "center",
   },
-  quantityTextDisabled: {
+  qtyTextDisabled: {
     color: "#B0B0B0",
   },
-  addToCartButton: {
+  addBtn: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    gap: 4,
+    gap: 3,
     backgroundColor: "#FF002B",
-    paddingVertical: 8,
+    paddingVertical: 4,
     paddingHorizontal: 8,
-    borderRadius: 6,
-    borderWidth: 1,
-    borderColor: "#FF002B",
-    flex: 2,
+    borderRadius: 4,
+    flex: 1,
   },
-  addToCartDisabled: {
+  addBtnDisabled: {
     backgroundColor: "#F5F5F5",
+    borderWidth: 1,
     borderColor: "#E8E8F0",
   },
-  addToCartText: {
-    fontSize: 12,
+  addBtnText: {
+    fontSize: 11,
     fontWeight: "600",
     color: "#FFFFFF",
   },
-  addToCartTextDisabled: {
-    fontSize: 12,
+  addBtnTextDisabled: {
+    fontSize: 11,
     fontWeight: "600",
     color: "#B0B0B0",
   },
